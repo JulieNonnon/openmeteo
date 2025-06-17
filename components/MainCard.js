@@ -5,21 +5,25 @@ import styles from "./MainCard.module.css";
 export const MainCard = ({
   city,
   country,
-  description,
-  iconName,
+  //description,
+  //iconName,
   unitSystem,
-  weatherData,
+  weatherData
 }) => {
+
+  const code = weatherData.current_weather.weathercode;
+  const { desc, icon } = weatherCodeMapping[code] || { desc: "Not Found", icon: "Not Found" }; // Mapped from weatherCode
+
   return (
     <div className={styles.wrapper}>
       <h1 className={styles.location}>
         {city}, {country}
       </h1>
-      <p className={styles.description}>{description}</p>
+      <p className={styles.description}>{desc}</p>
       <Image
         width="300px"
         height="300px"
-        src={`/icons/${iconName}.svg`}
+        src={`/icons/${icon}.svg`}
         alt="weatherIcon"
       />
       <h1 className={styles.temperature}>
@@ -31,8 +35,8 @@ export const MainCard = ({
       <p>
         Feels like{" "}
         {unitSystem == "metric"
-          ? Math.round(weatherData.main.feels_like)
-          : Math.round(ctoF(weatherData.main.feels_like))}
+          ? Math.round(weatherData.current_weather.temperature) // Open Weather's "weatherData.main.feels_like" doesn't has an equivalent in Open Meteo, use of "current_weather.temperature" by default
+          : Math.round(ctoF(weatherData.current_weather.temperature))}
         °{unitSystem == "metric" ? "C" : "F"}
       </p>
     </div>
