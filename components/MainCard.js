@@ -24,8 +24,8 @@ export const MainCard = ({
       <Image
         width="300px"
         height="300px"
-        src={`/icons/${icon}.svg`}
-        alt="weatherIcon"
+        src={`/iconsMeteo/${icon}.svg`}
+        alt={"weatherIcon - ${desc}"}
       />
       <h1 className={styles.temperature}>
         {unitSystem == "metric"
