@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ctoF } from "../services/converters";
 import styles from "./MainCard.module.css";
+import MeteoCodeMapping from "../services/meteoCodeMapping"; // Import of mapping
 
 export const MainCard = ({
   city,
@@ -12,7 +13,7 @@ export const MainCard = ({
 }) => {
 
   const code = weatherData.current_weather.weathercode;
-  const { desc, icon } = weatherCodeMapping[code] || { desc: "Not Found", icon: "Not Found" }; // Mapped from weatherCode
+  const { desc, icon } = MeteoCodeMapping[code] || { desc: "Not Found", icon: "Not Found" }; // Mapped from meteoCodeMapping
 
   return (
     <div className={styles.wrapper}>
