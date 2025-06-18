@@ -29,8 +29,8 @@ export const MainCard = ({
       />
       <h1 className={styles.temperature}>
         {unitSystem == "metric"
-          ? Math.round(weatherData.main.temp)
-          : Math.round(ctoF(weatherData.main.temp))}
+          ? Math.round(weatherData.current_weather.temperature) // Open Weather's "weatherData.main.feels_like" doesn't has an equivalent in Open Meteo, use of "current_weather.temperature" by default
+          : Math.round(ctoF(weatherData.current_weather.temperature))}
         °{unitSystem == "metric" ? "C" : "F"}
       </h1>
       <p>

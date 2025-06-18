@@ -13,10 +13,16 @@ export const getVisibility = (unitSystem, visibilityInMeters) =>
     ? (visibilityInMeters / 1000).toFixed(1)
     : kmToMiles(visibilityInMeters / 1000);
 
-export const getTime = (unitSystem, currentTime, timezone) =>
-  unitSystem == "metric"
-    ? unixToLocalTime(currentTime, timezone)
-    : timeTo12HourFormat(unixToLocalTime(currentTime, timezone));
+export const getTime = (unitSystem, currentTime, timezone) => // Open Meteo API doesn't use a unix timestamp, but return a ISO date format
+  // unitSystem == "metric"
+  //   ? unixToLocalTime(currentTime, timezone)
+  //   : timeTo12HourFormat(unixToLocalTime(currentTime, timezone));
+  {
+  if (!currentTime || !timezone) return "Unknown";
+  const localTime = unixToLocalTime(currentTime, timezone);
+  return unitSystem === "metric" ? localTime : timeTo12HourFormat(localTime);
+  };
+
 
 export const getAMPM = (unitSystem, currentTime, timezone) =>
   unitSystem === "imperial"

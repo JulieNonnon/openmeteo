@@ -21,6 +21,7 @@ export default async function handler(req, res) {
   }
 
   // fetching city coordonates via Open Meteo Geocoding API
+
   const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${cityInput}&count=1`);
   const geoData = await geoResponse.json();
 
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
   return res.status(404).json({ error: "Aucune coordonnée trouvée pour la ville demandée." });
 }
 
-  const {latitude, longitude, city, country } = geoData.results[0];
+  const {latitude, longitude, name: city, country } = geoData.results[0]; // extract "name" and renammed it as "city"
 
   // calling Open Meteo API
 
@@ -40,6 +41,12 @@ export default async function handler(req, res) {
     console.error("missing weather data : ", weatherData);
     return res.status(500).json({ error: "Couldn't fetch weather data." });
   }
+
+  res.status(200).json({
+    city,
+    country,
+    current_weather: weatherData.current_weather,
+  });
 
   // location and weather datas
   // const openMeteoData = {
@@ -55,9 +62,9 @@ export default async function handler(req, res) {
 
   // return res.status(200).json(openMeteoData);
 
-  res.status(200).json({
-    city: city,
-    country: country,
-    weather: weatherData,
-  });
+  // res.status(200).json({
+  //   city: city,
+  //   country: country,
+  //   weather: weatherData,
+  // });
 }
