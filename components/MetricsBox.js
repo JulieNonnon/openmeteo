@@ -9,12 +9,17 @@ import { MetricsCard } from "./MetricsCard";
 import styles from "./MetricsBox.module.css";
 
 export const MetricsBox = ({ weatherData, unitSystem }) => {
+
+  if (!weatherData?.hourly?.time || !weatherData?.current_weather?.time) {
+  return <div>Chargement des données météo...</div>;
+  }
   
   const current = weatherData.current_weather;
   const currentIndex = weatherData.hourly.time.findIndex(
     (t) => t === current.time
   );
-  const humidity = weatherData.hourly.relative_humidity_2m[currentIndex] || "Not Found";
+
+  const humidity = weatherData.hourly.relativehumidity_2m[currentIndex] || "Not Found";
   const sunrise = weatherData.daily.sunrise?.[0]; // may be missing in Northen Location
   const sunset = weatherData.daily.sunset?.[0]; // may be missing in Northen Location
   const sunriseTimestamp = Math.floor(new Date(sunrise).getTime() / 1000);
@@ -27,7 +32,7 @@ export const MetricsBox = ({ weatherData, unitSystem }) => {
       <MetricsCard
         title={"Humidity"}
         iconSrc={"/icons/humidity.png"}
-        metric={weatherData.main.humidity} // changed Open Weather's "weatherData.main.humidity" with the "humidity" declared above
+        metric={humidity} // changed Open Weather's "weatherData.main.humidity" with the "humidity" declared above
         unit={"%"}
       />
       <MetricsCard

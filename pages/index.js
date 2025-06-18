@@ -65,7 +65,8 @@ export const App = () => {
       <MainCard
         city={weatherData.city}
         country={weatherData.country}
-        description={weatherData.current_weather.weathercode} // with mapping
+        description={weatherData?.current_weather?.weathercode ?? "unknown"}
+        //description={weatherData.current_weather.weathercode} // with mapping
         iconName={weatherData.current_weather.weathercode} // with mapping
         unitSystem={unitSystem}
         weatherData={weatherData}
