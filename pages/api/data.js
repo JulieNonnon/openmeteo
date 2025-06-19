@@ -53,7 +53,7 @@ export default async function handler(req, res) {
 
   // calling Open Meteo API
 
-  const weatherResponse = await fetch( `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=auto&hourly=temperature_2m,relativehumidity_2m,weathercode,visibility,windspeed_10m,winddirection_10m` );
+  const weatherResponse = await fetch( `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=auto&hourly=temperature_2m,relativehumidity_2m,weathercode,visibility,windspeed_10m,winddirection_10m&daily=sunrise,sunset` );
   const weatherData = await weatherResponse.json();
 
   //if (!weatherData || !weatherData.current_weather) {
@@ -66,5 +66,8 @@ export default async function handler(req, res) {
     city: name,
     country,
     current_weather: weatherData.current_weather,
+    hourly: weatherData.hourly,
+    daily: weatherData.daily,
+    timezone: weatherData.timezone,
   });
 }

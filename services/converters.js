@@ -32,10 +32,29 @@ export const degToCompass = (num) => {
   return arr[val % 16];
 };
 
-export const unixToLocalTime = (unixSeconds, timezone) => {
-  let time = new Date((unixSeconds + timezone) * 1000)
-    .toISOString()
-    .match(/(\d{2}:\d{2})/)[0];
+// export const unixToLocalTime = (unixSeconds, timezone) => {
+//   let time = new Date((unixSeconds + timezone) * 1000)
+//     .toISOString()
+//     .match(/(\d{2}:\d{2})/)[0];
 
-  return time.startsWith("0") ? time.substring(1) : time;
+//   return time.startsWith("0") ? time.substring(1) : time;
+// };
+
+// NOTE : Open Meteo uses ISO string (no integer as timestamp in Open Weather), so unixToLocalTime need to be updated to be able to accept an ISO string
+
+export const unixToLocalTime = (input, timezoneOffset = 0) => {
+  let date;
+
+  if (typeof input === "number") {
+    date = new Date((input + timezoneOffset) * 1000);
+  } else if (typeof input === 'string') {
+    date = new Date(input);
+  } else {
+    return 'invalid date type'
+  }
+
+  if (isNaN(date.getTime())) return 'invalid date format';
+
+  const timeStr = date.toISOString().match(/(\d{2}:\d{2})/)?.[0] ?? 'xx : xx';
+  return timeStr.startsWith('0') ? timeStr.substring(1) : timeStr;
 };
