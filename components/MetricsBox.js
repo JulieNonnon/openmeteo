@@ -10,6 +10,8 @@ import styles from "./MetricsBox.module.css";
 
 export const MetricsBox = ({ weatherData, unitSystem }) => {
 
+  console.log("[Checking] Open Meteo datas fetched in MetricsBox :", weatherData);
+
   if (!weatherData?.hourly?.time || !weatherData?.current_weather?.time) {
   return <div>Chargement des données météo...</div>;
   }
@@ -20,12 +22,35 @@ export const MetricsBox = ({ weatherData, unitSystem }) => {
   );
 
   const humidity = weatherData.hourly.relativehumidity_2m[currentIndex] || "Not Found";
-  const sunrise = weatherData.daily.sunrise?.[0]; // may be missing in Northen Location
-  const sunset = weatherData.daily.sunset?.[0]; // may be missing in Northen Location
-  const sunriseTimestamp = Math.floor(new Date(sunrise).getTime() / 1000);
-  const sunsetTimestamp = Math.floor(new Date(sunset).getTime() / 1000);
+  const visibility = weatherData.hourly.visibility?.[currentIndex] ?? "Not Found";
 
-  // Note: Open Weather's "Visibility" data doesn't have an equivalent for Open Meteo
+  const sunrise = weatherData?.daily?.sunrise?.[0] ?? null;
+  const sunset = weatherData?.daily?.sunset?.[0] ?? null;
+  if (!sunrise || !sunset) { // ex : northern countries
+    console.warn('No sunrise / sunset data unavailable')
+    return <p>Missing sunrise / sunset data</p>
+  }
+
+  // const sunriseTimestamp = sunrise ? Math.floor(new Date(sunrise).getTime() / 1000) : null;
+  // const sunsetTimestamp = sunset ? Math.floor(new Date(sunset).getTime() / 1000) : null;
+
+  const sunriseTimestamp = !isNaN(Date.parse(sunrise)) ? Math.floor(new Date(sunrise).getTime() / 1000) : null;
+  const sunsetTimestamp = !isNaN(Date.parse(sunset)) ? Math.floor(new Date(sunset).getTime() / 1000) : null;
+
+  if (!sunriseTimestamp || !sunsetTimestamp) {
+    console.warn("Invalid sunrise/sunset date format:", sunrise, sunset);
+    return <p>Invalid sunrise/sunset data</p>;
+  }
+
+
+
+
+  // DEBUG MISSING DATAS :
+  console.log("Sunrise value from API:", weatherData.daily?.sunrise);
+  console.log("Sunset value from API:", weatherData.daily?.sunset);
+  console.log("Visibility values from API:", weatherData.hourly?.visibility);
+  console.log("Current index for weather data:", currentIndex);
+  console.log("Visibility at currentIndex:", weatherData.hourly.visibility?.[currentIndex]);
 
   return (
     <div className={styles.wrapper}>
@@ -46,12 +71,12 @@ export const MetricsBox = ({ weatherData, unitSystem }) => {
         iconSrc={"/icons/compass.png"}
         metric={degToCompass(current.winddirection)}
       />
-      {/* <MetricsCard
+      <MetricsCard
         title={"Visibility"}
         iconSrc={"/icons/binocular.png"}
-        metric={getVisibility(unitSystem, weatherData.visibility)}
+        metric={getVisibility(unitSystem, visibility)}
         unit={unitSystem == "metric" ? "km" : "miles"}
-      /> */}
+      />
       <MetricsCard
         title={"Sunrise"}
         iconSrc={"/icons/sunrise.png"}
