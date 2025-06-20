@@ -17,32 +17,35 @@ export const MetricsBox = ({ weatherData, unitSystem }) => {
   }
   
   const current = weatherData.current_weather;
-  const currentIndex = weatherData.hourly.time.findIndex(
-    (t) => t === current.time
-  );
+  
+  // const currentIndex = weatherData.hourly.time.findIndex( // Not precised enough, hence the -1 index
+  //   (t) => t === current.time
+  // );
+  const currentTime = new Date(current.time);getTime();
+
+  // to avoid -1 index and getting closest as possible to the current hour (in a interval of 1 hour = 3600000 ms)
+  const currentIndex = weatherData.hourly.time.findIndex((t) => {
+    const hourlyTime = new Date(t).getTime();
+    return Math.abs(hourlyTime - currentTime) < 3600000;
+  });
 
   const humidity = weatherData.hourly.relativehumidity_2m[currentIndex] || "Not Found";
   const visibility = weatherData.hourly.visibility?.[currentIndex] ?? "Not Found";
 
-  const sunrise = weatherData?.daily?.sunrise?.[0] ?? null;
-  const sunset = weatherData?.daily?.sunset?.[0] ?? null;
+  const sunrise = weatherData?.daily?.sunrise?.[0];
+  const sunset = weatherData?.daily?.sunset?.[0];
+  const sunriseTimestamp = sunrise ? Math.floor(new Date(sunrise).getTime() / 1000) : null;
+  const sunsetTimestamp = sunset ? Math.floor(new Date(sunset).getTime() / 1000) : null;
+
   if (!sunrise || !sunset) { // ex : northern countries
     console.warn('No sunrise / sunset data unavailable')
     return <p>Missing sunrise / sunset data</p>
   }
 
-  // const sunriseTimestamp = sunrise ? Math.floor(new Date(sunrise).getTime() / 1000) : null;
-  // const sunsetTimestamp = sunset ? Math.floor(new Date(sunset).getTime() / 1000) : null;
-
-  const sunriseTimestamp = !isNaN(Date.parse(sunrise)) ? Math.floor(new Date(sunrise).getTime() / 1000) : null;
-  const sunsetTimestamp = !isNaN(Date.parse(sunset)) ? Math.floor(new Date(sunset).getTime() / 1000) : null;
-
   if (!sunriseTimestamp || !sunsetTimestamp) {
     console.warn("Invalid sunrise/sunset date format:", sunrise, sunset);
     return <p>Invalid sunrise/sunset data</p>;
   }
-
-
 
 
   // DEBUG MISSING DATAS :
